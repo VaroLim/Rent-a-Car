@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import connectToDb from './src/services/db.js'
-import foodRouter from './src/router/food.js'
+import carRouter from './src/router/car.js'
 import authRouter from './src/router/auth.js'
 import dotenv from 'dotenv'
 import { ensureAuthenticated } from './src/middleware/auth.js'
@@ -23,7 +23,7 @@ const startApp = async () => {
 
   app.use(ensureAuthenticated)
 
-  app.use('/foods', foodRouter)
+  app.use('/cars', carRouter)
   app.use('/auth', authRouter)
 
   try {
