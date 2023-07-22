@@ -1,5 +1,8 @@
 import Post from '../models/posts.js'
-import UserPostComment from '../models/user_post_comment.js'
+import UserPostComment from '../models/userPostComment.js'
+import UserPostRequest from '../models/userPostRequest.js'
+import UserPostValoration from '../models/userPostValoration.js'
+import { validatePostAvailableTimeData } from '../utils/post.js'
 
 /**
  * @returns {Promise<object>}
@@ -26,7 +29,24 @@ export const getPostById = async (id) => {
     postId: post._id,
   })
 
-  return { ...post.toObject(), comment: postComments }
+  const postValorations = await UserPostValoration.find({
+    postId: post._id,
+  })
+
+  const rating = postValorations.reduce((acc, current) => {
+    return acc + current.rate
+  }, 0)
+
+  const postRequests = await UserPostRequest.find({
+    postId: post._id,
+  })
+
+  return {
+    ...post.toObject(),
+    comments: postComments,
+    rating: rating / 5,
+    requests: postRequests,
+  }
 }
 
 /**
@@ -44,19 +64,27 @@ export const getPostById = async (id) => {
  * @param {'manual' | 'automatic'} data.gearBox
  * @param {'car' | 'motorbike' | 'van'} data.vehicle
  */
-export const createPost = async ({
-  vehicle,
-  name,
-  brand,
-  model,
-  plateNumber,
-  km,
-  carSeats,
-  fuel,
-  gearBox,
-  doors,
-  sellerId,
-}) => {
+export const createPost = async (
+  {
+    vehicle,
+    name,
+    brand,
+    model,
+    plateNumber,
+    km,
+    carSeats,
+    fuel,
+    gearBox,
+    doors,
+    sellerId,
+    availableTimes,
+  },
+  user
+) => {
+  if (user.rol === 'customer') {
+    throw new Error('You dont have permission for this')
+  }
+
   if (
     !vehicle ||
     !brand ||
@@ -90,6 +118,12 @@ export const createPost = async ({
     throw new Error('The number of doors is not valid')
   }
 
+  if (availableTimes) {
+    for (const availableTime of availableTimes) {
+      validatePostAvailableTimeData(availableTime)
+    }
+  }
+
   const existingPost = await Post.findOne({ name, vehicle, sellerId })
   if (existingPost) {
     throw new Error('This post already exists')
@@ -107,6 +141,7 @@ export const createPost = async ({
     gearBox,
     doors,
     sellerId,
+    availableTimes,
   })
 
   return post.save()
@@ -145,7 +180,6 @@ export const updatePost = async (
     fuel,
     gearBox,
     doors,
-    sellerId,
   },
   user
 ) => {
@@ -189,7 +223,7 @@ export const updatePost = async (
       throw new Error(`The type of vehicle must be ${validPostVehicle}`)
     }
   } else {
-    infoToUpdate.vehicle = vehicle
+    post.vehicle = vehicle
   }
 
   const validFuel = ['gas', 'electric']
