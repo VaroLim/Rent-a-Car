@@ -14,6 +14,9 @@ const UserPostValorationSchema = new mongoose.Schema(
     },
     rate: {
       type: Number,
+      require: true,
+      min: 0,
+      max: 5,
     },
     createdAt: {
       type: Date,
@@ -21,11 +24,11 @@ const UserPostValorationSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { collection: 'UserPostValorations' }
+  { collection: 'userPostValorations' }
 )
 
 const UserPostValoration = mongoose.model(
-  'Validation',
+  'Valoration',
   UserPostValorationSchema
 )
 

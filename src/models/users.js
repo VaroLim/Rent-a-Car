@@ -9,48 +9,38 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       require: true,
     },
-
     password: {
       type: String,
       require: true,
     },
-
     firstName: {
       type: String,
     },
-
     lastName: {
       type: String,
     },
-
     dateOfBirth: {
       type: Date,
     },
-
     phone: {
       type: Number,
     },
-
     dni: {
       type: String,
     },
-
     rol: {
       type: String,
       enum: ['admin', 'seller', 'customer'],
     },
-
     salt: {
       type: String,
       require: true,
     },
-
     createdAt: {
       type: Date,
       require: true,
       default: Date.now,
     },
-
     favPosts: [
       {
         type: mongoose.Schema.Types.ObjectId,
