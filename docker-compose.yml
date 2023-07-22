@@ -1,11 +1,11 @@
 version: '3.7'
 services:
   db:
-    container_name: 'rent-a-car'
+    container_name: 'rent-a-car-back'
     image: mongo:3.6
     ports:
       - 27017:27017
     volumes:
-      - ~/data/mongodb:/data/rentACar
+      - ~/data/mongodb:/data/rentACarBack
 volumes:
   db-data:
