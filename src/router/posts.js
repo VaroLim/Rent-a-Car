@@ -124,7 +124,7 @@ router.post('/rate/:postId', async (request, response) => {
   }
 })
 
-router.post('/request/:postId', async (request, response) => {
+router.post('/:postId/request', async (request, response) => {
   try {
     await createPostRequestByUser({
       postId: request.params.postId,

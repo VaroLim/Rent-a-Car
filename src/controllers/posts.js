@@ -1,8 +1,8 @@
 import Post from '../models/posts.js'
-import UserPostComment from '../models/userPostComment.js'
-import UserPostRequest from '../models/userPostRequest.js'
-import UserPostValoration from '../models/userPostValoration.js'
-import { validatePostAvailableTimeData } from '../utils/post.js'
+import UserPostComment from '../models/user_post_comment.js'
+import UserPostRequest from '../models/user_post_request.js'
+import UserPostValoration from '../models/user_post_valoration.js'
+import { validatePostAvailableTimesData } from '../utils/post.js'
 
 /**
  * @returns {Promise<object>}
@@ -119,9 +119,7 @@ export const createPost = async (
   }
 
   if (availableTimes) {
-    for (const availableTime of availableTimes) {
-      validatePostAvailableTimeData(availableTime)
-    }
+    validatePostAvailableTimesData(availableTimes)
   }
 
   const existingPost = await Post.findOne({ name, vehicle, sellerId })
@@ -180,10 +178,14 @@ export const updatePost = async (
     fuel,
     gearBox,
     doors,
+    availableTimes,
   },
   user
 ) => {
-  const post = await getPostById(id)
+  const post = await Post.findOne({ _id: id })
+  if (!post) {
+    throw new Error('Post not found')
+  }
 
   if (
     post.sellerId.toString() !== user._id.toString() &&
@@ -214,6 +216,12 @@ export const updatePost = async (
 
   if (carSeats) {
     post.carSeats = carSeats
+  }
+
+  if (availableTimes) {
+    validatePostAvailableTimesData(availableTimes)
+
+    post.availableTimes = availableTimes
   }
 
   const validPostVehicle = ['car', 'van', 'motorbike']

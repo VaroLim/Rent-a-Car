@@ -1,28 +1,5 @@
 import mongoose from 'mongoose'
 
-export const PostAvailableTimeSchema = new mongoose.Schema({
-  weekDays: [
-    {
-      type: String,
-      enum: [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday',
-      ],
-    },
-  ],
-  times: [
-    {
-      start: Date,
-      end: Date,
-    },
-  ],
-})
-
 const PostSchema = new mongoose.Schema(
   {
     vehicle: {
@@ -43,7 +20,7 @@ const PostSchema = new mongoose.Schema(
       require: true,
     },
     plateNumber: {
-      type: Number,
+      type: String,
       require: true,
     },
     km: {
@@ -76,9 +53,20 @@ const PostSchema = new mongoose.Schema(
       require: true,
       default: Date.now,
     },
-    availableTimes: {
-      type: [PostAvailableTimeSchema],
-    },
+    availableTimes: [
+      {
+        type: String,
+        enum: [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+          'Sunday',
+        ],
+      },
+    ],
   },
   { collection: 'posts' }
 )
