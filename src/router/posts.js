@@ -12,14 +12,14 @@ import {
   togglePostFavByUser,
   createPostValorationByUser,
   createPostRequestByUser,
-  updateRequestStatusBySeller,
+  updateRequestStatusByUser,
 } from '../controllers/user.js'
 
 const router = express.Router()
 
-router.get('/', async (_, response) => {
+router.get('/', async (request, response) => {
   try {
-    const posts = await getPosts()
+    const posts = await getPosts(request.query)
     response.json({ posts })
   } catch (error) {
     response.status(500).json(error.message)
@@ -137,13 +137,14 @@ router.post('/:postId/request', async (request, response) => {
   }
 })
 
-router.put('/request/:postId/:requestId', async (request, response) => {
+router.put('/request/:requestId', async (request, response) => {
   try {
-    await updateRequestStatusBySeller(
-      request.params.postId,
-      request.body,
-      request.user
-    )
+    await updateRequestStatusByUser({
+      requestId: request.params.requestId,
+      data: request.body,
+      user: request.user,
+    })
+    response.json(true)
   } catch (error) {
     response.status(500).json(error.message)
   }

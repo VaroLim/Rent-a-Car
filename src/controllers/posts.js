@@ -1,15 +1,77 @@
 import Post from '../models/posts.js'
-import UserPostComment from '../models/user_post_comment.js'
-import UserPostRequest from '../models/user_post_request.js'
-import UserPostValoration from '../models/user_post_valoration.js'
+import UserPostComment from '../models/userPostComment.js'
+import UserPostRequest from '../models/userPostRequest.js'
+import UserPostValoration from '../models/userPostValoration.js'
 import { validatePostAvailableTimesData } from '../utils/post.js'
 
 /**
  * @returns {Promise<object>}
  */
 
-export const getPosts = async () => {
-  return Post.find()
+export const getPosts = async (filters) => {
+  const filtersData = {}
+  //TODO controlar si el tipo es correcto con los enum
+  if (filters) {
+    const validPostVehicle = ['car', 'van', 'motorbike']
+    if (filters.vehicle) {
+      if (!validPostVehicle.includes(filters.vehicle)) {
+        throw new Error(`The type of vehicle must be ${validPostVehicle}`)
+      } else {
+        filtersData.vehicle = filters.vehicle
+      }
+    }
+
+    if (filters.name) {
+      filtersData.name = { $regex: filters.name }
+    }
+
+    if (filters.brand) {
+      filtersData.brand = filters.brand
+    }
+
+    if (filters.model) {
+      filtersData.model = filters.model
+    }
+
+    if (filters.carSeats) {
+      filtersData.carSeats = filters.carSeats
+    }
+
+    const validFuel = ['gas', 'electric']
+    if (filters.fuel) {
+      if (!validFuel.includes(filters.fuel)) {
+        throw new Error('This fuel type is not valid')
+      } else {
+        filtersData.fuel = filters.fuel
+      }
+    }
+
+    const validGearBox = ['manual', 'automatic']
+    if (filters.gearBox) {
+      if (!validGearBox.includes(filters.gearBox)) {
+        throw new Error('This gearbox type is invalid')
+      } else {
+        filtersData.gearBox = filters.gearBox
+      }
+    }
+
+    const validDoors = ['3', '5']
+    if (filters.doors) {
+      if (!validDoors.includes(filters.doors)) {
+        throw new Error('The number of doors is not valid')
+      } else {
+        filtersData.doors = filters.doors
+      }
+    }
+
+    if (filters.time) {
+      filtersData.availableTimes = {
+        $in: filters.time.split(','),
+      }
+    }
+  }
+
+  return Post.find(filtersData)
 }
 
 /**

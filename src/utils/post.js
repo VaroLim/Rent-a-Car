@@ -1,5 +1,3 @@
-import { isValid } from 'date-fns'
-
 const WEEK_DAYS = {
   MONDAY: 'Monday',
   TUESDAY: 'Tuesday',

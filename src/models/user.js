@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
     },
     favPosts: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.Array,
         ref: 'Post',
       },
     ],
